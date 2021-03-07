@@ -41,6 +41,6 @@ class InvoiceControllerTest {
     }
 
     private fun getResultResource(id: String): String {
-        return object {}.javaClass.getResource("/invoice/$id.json").readText()
+        return object {}.javaClass.getResource("/results/$id.json").readText()
     }
 }

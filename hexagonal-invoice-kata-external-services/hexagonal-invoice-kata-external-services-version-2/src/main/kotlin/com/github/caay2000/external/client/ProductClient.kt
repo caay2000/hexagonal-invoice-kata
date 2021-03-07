@@ -1,6 +1,5 @@
 package com.github.caay2000.external.client
 
-import com.github.caay2000.external.data.Data.accountData
 import com.github.caay2000.external.data.Data.accountProductData
 import com.github.caay2000.external.model.AccountProduct
 import com.github.caay2000.external.model.ProductClientConfiguration

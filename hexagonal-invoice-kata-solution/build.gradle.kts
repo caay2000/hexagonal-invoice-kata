@@ -23,7 +23,6 @@ dependencies {
     implementation("io.ktor:ktor-server:1.5.1")
     implementation("io.ktor:ktor-server-netty:1.5.1")
     implementation("io.ktor:ktor-jackson:1.5.1")
-    implementation("ch.qos.logback:logback-classic:1.2.3")
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.6.2")
     testImplementation("org.jetbrains.kotlin:kotlin-test:$kotlinVersion")

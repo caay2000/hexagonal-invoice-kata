@@ -13,13 +13,12 @@ class AccountClient(configuration: AccountClientConfiguration) {
         if (accountData.containsKey(accountId)) {
             val data = accountData[accountId]!!
             return Account(
-                accountId = data.id,
+                id = data.id,
                 name = data.name,
                 address = data.address,
                 city = data.city,
                 postalCode = data.postalCode,
                 email = data.email,
-                birthDate = data.birthDate,
                 gender = data.gender
             )
         }

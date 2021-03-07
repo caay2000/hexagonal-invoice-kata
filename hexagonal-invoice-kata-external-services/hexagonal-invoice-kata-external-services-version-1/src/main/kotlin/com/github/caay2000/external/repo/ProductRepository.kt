@@ -11,8 +11,8 @@ class ProductRepository(configuration: ProductRepositoryConfiguration) {
         productData.map {
             Product(
                 id = it.value.id,
-                productName = it.value.name,
-                productPrice = it.value.price
+                name = it.value.name,
+                price = it.value.price
             )
         }
 }

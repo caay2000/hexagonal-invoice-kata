@@ -11,7 +11,7 @@ data class Product(
 )
 
 data class Account(
-    val accountId: String,
+    val id: String,
     val name: String,
     val address: String,
     val city: String,

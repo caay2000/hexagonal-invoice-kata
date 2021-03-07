@@ -27,7 +27,7 @@ class InvoiceApplication(
         return Invoice(
             account = account,
             products = accountProducts,
-            totalAmount = accountProducts.map { it.productPrice }.sum()
+            totalAmount = accountProducts.map { it.price }.sum()
         )
     }
 

@@ -1,0 +1,23 @@
+{
+  "account": {
+    "id": "8461913",
+    "name": "Constance Middleton",
+    "address": "P.O. Box 139, 381 Dis Rd.",
+    "city": "Aosta",
+    "postalCode": "73760-79194",
+    "email": "consectetuer.ipsum.nunc@adipiscingelitCurabitur.co.uk"
+  },
+  "products": [
+    {
+      "id": "200",
+      "name": "LAND LINE",
+      "price": 20
+    },
+    {
+      "id": "300",
+      "name": "PHONE",
+      "price": 60
+    }
+  ],
+  "totalAmount": 80
+}

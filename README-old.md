@@ -13,7 +13,7 @@
     * [1. Introduction](#1-introduction)
     * [2. Non-Hexagonal Solution](#2-non-hexagonal-solution)
     * [3. Migrating to Hexagonal Architecture](#3-migrating-to-hexagonal-architecture)
-    * [4. Hexagonal Solution](#4-hexagonal-solution)
+    * [4. Hexagonal Architecture Solution](#4-hexagonal-architecture-solution)
 - [Summary](#summary)
 
 ## Disclaimers
@@ -37,39 +37,46 @@ There are multiple explanations, articles and even books out there about the pro
 
 ## How?
 
-### Rules
+There are only three important rules in hexagonal architecture:
 
-There are only two never-breaking rules in hexagonal architecture:
+- 1 You need at least 3 layers of abstraction
+- 2 You can never trespass more than one layer at a time
+- 3 You can never go from an inner layer to an outer layer
 
-1. You need at least 3 layers of abstraction
-2. You must always go from outer layers to inner layers, never the other side around.
+That's something that will never change in any hexagonal architecture. TODO
 
-### Components
-
-More information to come :soon:
+It's impossible to explain a complex concept like this one without a drawing. I tried to create a really simple one, with the minimum lines and concepts to explain just the basics.
 
 ![Hexagonal Diagram](kata-readme/hexagonal.png)
 
+TODO
+
+### Components (TODO)
+
+- Domain Model
+- Ports
+- Adapters
+
 ## Kata
 
-You need gradle and kotlin for this kata. Some files needed by the kata are compiled with java 8, so you'll need also any JDK 8+
+You need maven and kotlin for this kata. It has been compiled with jvm 1.6, so it should be compatible with any version 1.6+.
 
-To compile the whole project, just execute 'gradle clean build' from terminal, or import the project with intellij and let the magic happen! :sparkles:
+To compile the whole project, just execute 'mvn clean install' from terminal, or compile the project with intellij.
 
 ### 1. Introduction
 
-<ins>Description</ins>: Your new job starts today in a very famous media group :relaxed:. You have been told that you are hired to improve their current application that provides invoice data to their customers. The last intern created a simple application that accomplishes what they want nowadays, but you'll need to add new features to it quite soon, so it's better to start taking a look at it.
+Your new job starts today in a very famous media group. You have been told that they want a new application to provide data to a new platform they are starting to develop. They will need account, product and invoice information, and the last intern created a simple application that accomplishes what they want nowadays. Anyway, you have been told, that you will need to add new features to it quite soon, so it's better to start taking a look at it.
 
-- Open the hexagonal-invoice-kata module and investigate it!
-- Familiarize with the current code structure
-- Check green tests :white_check_mark:
+#### 1.1 Open the `hexagonal-kata-kotlin-application` module
 
-<ins>Summary</ins>: As you can see the current application has:
+TODO
 
-- `Application.kt` It's the application configuration, where all the Dependency Injection magic happens. It uses `ktor`
-- `InvoiceController.kt` It's the controller that calls your current `InvoiceService` and returns a json response
-- `InvoiceService.kt` It's where the business logic happens. Nowadays, it just calls all the `external-services` were we retrieve data, and created the `Invoice` object
-- `external-services` dependency. There are 3 different dependencies, `AccountClient`, `ProductClient` and `ProductRepository`, where you are currently retrieving data from.
+You will see a simple Ktor application (Ktor & Koin are not relevant to the kata itself) with 3 REST endpoints: `getAccountByAccountId`
+, `getProductsByAccountId` and `getInvoiceByAccountId`. These endpoints call an `InvoiceService`, and this class is the one that retrieves account and product information from the company currently services.
+
+#### 1.2 Execute `AccountControllerTest` to check that everything works
+
+There is an `AccountControllerTest` class that checks that everything works as expected. You can execute it to see that everything is green, working and fantastic. Take a look at the rest of the application and be sure that you understand every bit of it before continuing.
 
 ### 2. Non-Hexagonal Solution
 
@@ -79,50 +86,77 @@ If you are already convinced of the benefits of hexagonal architecture you can s
 
 #### 2.1 Change the external dependency
 
-<ins>Description</ins>: First thing we'll need to do before implementing any new logic, is update our company dependencies (`external-services`) to it's latests version
+After checking that our application is green and working, we received a requirement. Seems that we have been consuming data from a really old clients/respositories, so we'll need to update to a newer versions for the next features we'll need to implement soon.
 
-- Change `externalServicesVersion` dependency version to `2` on file `hexagonal-invoice-kata-application/build.gradle.kts`
-- Solve compilation issues on InvoiceService :warning:
-- Check tests are red because of json changes :interrobang:
-- Solve json changes
-- Check green tests :white_check_mark:
+To do this, we'll just need to update the external dependencies version property in our `pom.xml`, from version 1 to version 2
 
-<ins>Summary</ins>: You had to modify multiple parts of your `InvoiceService` due to changes in a external dependency. It also implied some changes on you json response :facepalm:
+```xml
+
+<properties>
+    <external.services.version>2</external.services.version>
+</properties>
+```
+
+After updating the dependency version, you'll realise that your application is broken. Let's try to solve it and make it compile again. You'll need to change the InvoiceService class because now, the external model of productClient has changed. The needed changes are the following ones
+
+```kotlin
+fun getInvoiceByAccountId(accountId: String): Invoice {
+    val account = accountClient.getAccountById(accountId)
+    val listAccountProducts = productClient.getProductsByAccountId(accountId)
+    val productInformation = productRepository.getProductInformation()
+
+    val accountProducts = listAccountProducts.filter {
+        it.endDate == null < ----change!!!
+    }.map {
+        productInformation.first { data -> data.id == it.id } < ----change!!!
+    }
+
+    return Invoice(
+        account = account,
+        products = accountProducts,
+        totalAmount = accountProducts.map { it.price }.sum() < ----change!!!
+    )
+}
+TODO add line numbers
+```
+
+After solving the compilation problems, let's try to run the tests again...
+
+Failing... To make the tests pass again, you will need to modify the controller response, because now your response is different from before. This could be done easily implementing some data classes in the controller following the json response format. Jackson will do the rest.
 
 #### 2.2 New features to be implemented
 
-<ins>Description</ins>: We want to add some discounts to some of our best customers. Premium accounts will have better prices. :money_with_wings:
+Now that we have our external services version updated to version 2, we are ready to add a new feature to our application.
 
-- There is a new endpoint on `AccountClient` `getPremiumFeatures(accountId: String)`
-- `ProductRepository` now returns also the `premiumPrice`
-- Change `InvoiceService` to return premium prices for premium accounts
-- Copy `kata-test-data/1-final` files to your `test/resources`. Overwrite everything
-- Check green tests :white_check_mark:
+We want to add some discounts to some of our best customers. Premium accounts will have better prices. To do this, you just need to check which account is premium, with the new endpoint on the AccountClient (`getPremiumFeatures(accountId: String)`) and apply the premium price (instead of the original one) for all its products. We have been notified also that some fields in our JSON should be renamed. `productName` and `productPrice`, should be now, `name` and `price`.
 
-<ins>Summary</ins>: You had some problems with the product price because you were using external `Product` object.
+To check that everything works as expected, copy all files from kata-test-data 2.b/invoice to your tests resources path and execute again all the tests. Try to achieve a green build.
 
 #### 2.3 Another External Services version
 
-<ins>Description</ins>: You have been told that the ProductRepository has been decommissioned, so you'll need to update to a newer version of `external-services` 
+Next step is to just update to the latest version of external services, version 3. After updating, you will realise that the product repository disappeared. Now, everything is integrated in ProductClient. You'll need to modify you application implementation to solve this. After solving the implementation details, everything should work as before, but...
 
-- Change `externalServicesVersion` dependency version to `3` on file `hexagonal-invoice-kata-application/build.gradle.kts`
-- This new version removes the need of a repository :heavy_exclamation_mark:
-- Solve compilation issues on `InvoiceService` :warning:
-- Solve json problems with fields we don't want to expose (PII data) :interrobang:
-- Check green tests :white_check_mark:
+Seems that our tests are failing... why? Our new version of the external dependencies brings more changes than we expected. There is some PII (Personally Identifiable Information) returned now from the AccountClient, and seems that we are showing it in our invoice! That information should never be shown, so avoid printing it in the invoice!
 
-<ins>Summary</ins>: You had to modify completely your `InvoiceService`, while there is no new business rules :facepalm:. You also exposed PII information from your customers :x:  but thanks to a test you realised before deploying in production.
+After all this changes, we finally have our application completely updated and working.
 
 #### 2.4 Non-Hexagonal Summary
 
-- Just one business rule change, but you modified your InvoiceService in all 3 steps :facepalm:
-- Changes on external dependencies implied changes/issues across you whole application  :anguished:
-- Thanks to our existing tests, we realised that we were exposing a critical PII information just updating an external dependency :triumph:
-- If you added any test, that they were broken on each change :rage:
+Let's think about what problems did you find while doing this exercise. The main problem is that everytime we change our external dependency, we'll need to update our application code, our business code. Is this right? why do we need to change our business code, if there is no new features?
+
+When we added a new feature, that's ok, we had to change our business code to implement the new feature, but for just updating an external dependency?
+
+Another problem was that we were showing PII information in our invoice, but we did not do any change to expose them... hopefully we had tests before sending it to production.
+
+Did you find disturbing something more?
+
+To start the next point, you can revert/stash our current code and leave the code as it was on the start of the exercise.
 
 ### 3. Migrating to Hexagonal Architecture
 
-**TODO**
+Ok, let's begin with our Hexagonal Architecture exercise. Let's first think what should be our first steps. Take a look again to the hexagonal diagram:
+
+![Hexagonal Diagram](kata-readme/hexagonal.png)
 
 #### 3.1. Create the contracts
 
@@ -224,7 +258,7 @@ As you can see, now our application is quite well organised. We have 3 different
 
 Now, depending on the work we need to do, we know clearly what we should modify. For example, and external dependency modification: we don't need to change our business logic, just change the adapters.
 
-### 4. Hexagonal Solution
+### 4. Hexagonal Architecture Solution
 
 Let's start with the exercise in this new hexagonal architecture fashion
 
@@ -292,3 +326,11 @@ Remember that before, without hexagonal, apart of the repository change already 
 ## Summary
 
 TODO
+
+## Appendix
+
+|                   	| v1                                                        | v2                                                                                                                                                                | v3                                                                                                                                                                |
+|-------------------	|--------------------------------------------------------	|----------------------------------------------------------------------------------------------------------------------------------------------------------------	|----------------------------------------------------------------------------------------------------------------------------------------------------------------	|
+| AccountClient | Account {<br>&nbsp;&nbsp;accountId:String<br>&nbsp;&nbsp;name:String<br>&nbsp;&nbsp;address:String<br>&nbsp;&nbsp;city:String<br>&nbsp;&nbsp;postalCode:String<br>&nbsp;&nbsp;email:String<br>} | Account {<br>&nbsp;&nbsp;accountId:String<br>&nbsp;&nbsp;name:String<br>&nbsp;&nbsp;address:String<br>&nbsp;&nbsp;city:String<br>&nbsp;&nbsp;postalCode:String<br>&nbsp;&nbsp;email:String<br>} | Account {<br>&nbsp;&nbsp;accountId:String<br>&nbsp;&nbsp;name:String<br>&nbsp;&nbsp;address:String<br>&nbsp;&nbsp;city:String<br>&nbsp;&nbsp;postalCode:String<br>&nbsp;&nbsp;email:String<br>&nbsp;&nbsp;birthDate:LocalDate<br>&nbsp;&nbsp;gender:Gender<br>} |
+| ProductClient | Map&lt;String,LocalDate?&gt;| List&lt;AccountProduct&gt;&nbsp;{<br>&nbsp;&nbsp;id:String<br>&nbsp;&nbsp;premiumAccount:Boolean<br>&nbsp;&nbsp;startDate:LocalDate<br>&nbsp;&nbsp;endDate:LocalDate?<br>} | AccountProducts {<br>&nbsp;&nbsp;premiumAccount: Boolean<br>&nbsp;&nbsp;products: List&lt;Product&gt;&nbsp;{<br>&nbsp;&nbsp;&nbsp;&nbsp;id:String<br>&nbsp;&nbsp;&nbsp;&nbsp;name:String<br>&nbsp;&nbsp;&nbsp;&nbsp;price:BigDecimal<br>&nbsp;&nbsp;&nbsp;&nbsp;premiumPrice:BigDecimal<br>&nbsp;&nbsp;&nbsp;&nbsp;startDate:LocalDate<br>&nbsp;&nbsp;&nbsp;&nbsp;endDate:LocalDate?<br>&nbsp;&nbsp;}<br>} |
+| ProductRepository | Product {<br>&nbsp;&nbsp;id:String<br>&nbsp;&nbsp;productName:String<br>&nbsp;&nbsp;productPrice:Int<br>} | Product {<br>&nbsp;&nbsp;id:String<br>&nbsp;&nbsp;name:String<br>&nbsp;&nbsp;price:Int<br>&nbsp;&nbsp;premiumPrice:BigInteger<br>} | |
