@@ -1,4 +1,4 @@
-package com.github.caay2000.application.infrastructure.inbound
+package com.github.caay2000.application.infrastructure.adapter
 
 import com.github.caay2000.application.model.common.AccountId
 import com.github.caay2000.application.model.inbound.Product
@@ -10,11 +10,11 @@ class ProductAdapter(
 ) : ProductApi {
 
     override fun getProducts(accountId: AccountId): List<Product> {
-        val accountProducts = productClient.getProductsByAccountId(accountId)
+        val products = productClient.getProductsByAccountId(accountId)
 
-        return accountProducts.map { product ->
+        return products.map { product ->
             Product(
-                productId = product.id,
+                id = product.id,
                 name = product.name,
                 price = product.price,
                 premiumPrice = product.premiumPrice,

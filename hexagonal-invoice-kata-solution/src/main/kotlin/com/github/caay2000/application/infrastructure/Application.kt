@@ -3,9 +3,9 @@ package com.github.caay2000.application.infrastructure
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.github.caay2000.application.domain.InvoiceService
-import com.github.caay2000.application.infrastructure.inbound.AccountAdapter
-import com.github.caay2000.application.infrastructure.inbound.ProductAdapter
-import com.github.caay2000.application.infrastructure.outbound.InvoiceController
+import com.github.caay2000.application.infrastructure.adapter.AccountAdapter
+import com.github.caay2000.application.infrastructure.adapter.ProductAdapter
+import com.github.caay2000.application.infrastructure.http.InvoiceController
 import com.github.caay2000.external.client.AccountClient
 import com.github.caay2000.external.client.ProductClient
 import com.github.caay2000.external.model.AccountClientConfiguration

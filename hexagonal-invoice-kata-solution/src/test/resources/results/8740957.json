@@ -1,12 +1,12 @@
 {
-  "account" : {
-    "id" : "8740957",
-    "name" : "Hikel Lopez",
-    "address" : "452-500 Eu Rd.",
-    "city" : "Geleen",
-    "postalCode" : "31390",
-    "email" : "quam.elementum.at@sedleo.ca"
+  "account": {
+    "id": "8740957",
+    "name": "Hikel Lopez",
+    "address": "452-500 Eu Rd.",
+    "city": "Geleen",
+    "postalCode": "31390",
+    "email": "quam.elementum.at@sedleo.ca"
   },
-  "products" : [ ],
-  "totalAmount" : 0.00
+  "products": [],
+  "totalAmount": 0.00
 }

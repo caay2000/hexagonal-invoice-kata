@@ -1,4 +1,4 @@
-package com.github.caay2000.application.infrastructure.inbound
+package com.github.caay2000.application.infrastructure.adapter
 
 import com.github.caay2000.application.model.common.AccountId
 import com.github.caay2000.application.model.inbound.Account
@@ -10,9 +10,8 @@ class AccountAdapter(private val accountClient: AccountClient) : AccountApi {
     override fun getAccount(accountId: AccountId): Account {
         val account = accountClient.getAccountById(accountId)
         val premium = accountClient.getPremiumFeatures(accountId)
-
         return Account(
-            accountId = accountId,
+            id = account.id,
             name = account.name,
             address = account.address,
             city = account.city,

@@ -5,8 +5,16 @@ import com.github.caay2000.application.model.common.ProductId
 import java.math.BigDecimal
 import java.time.LocalDate
 
+data class Product(
+    val id: ProductId,
+    val name: String,
+    val price: BigDecimal,
+    val premiumPrice: BigDecimal,
+    val endDate: LocalDate?
+)
+
 data class Account(
-    val accountId: AccountId,
+    val id: AccountId,
     val name: String,
     val address: String,
     val city: String,
@@ -14,13 +22,3 @@ data class Account(
     val email: String,
     val premium: Boolean
 )
-
-data class Product(
-    val productId: ProductId,
-    val name: String,
-    val price: BigDecimal,
-    val premiumPrice: BigDecimal,
-    val endDate: LocalDate?
-) {
-    fun isActive() = endDate == null
-}
