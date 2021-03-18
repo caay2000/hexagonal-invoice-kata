@@ -64,6 +64,8 @@ To compile the whole project, just execute 'gradle clean build' from terminal, o
 - Familiarize with the current code structure
 - Check green tests :white_check_mark:
 
+![Invoice Application](kata-readme/invoice-application.png)
+
 <ins>Summary</ins>: As you can see the current application has:
 
 - `Application.kt` It's the application configuration, where all the Dependency Injection magic happens. It uses `ktor`
