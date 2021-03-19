@@ -64,7 +64,7 @@ To compile the whole project, just execute 'gradle clean build' from terminal, o
 - Familiarize with the current code structure
 - Check green tests :white_check_mark:
 
-![Invoice Application](kata-readme/invoice-application.png)
+![Invoice Application](kata-readme/invoice-application-1.png)
 
 <ins>Summary</ins>: As you can see the current application has:
 
@@ -82,6 +82,8 @@ If you are already convinced of the benefits of hexagonal architecture you can s
 #### 2.1 Change the external dependency
 
 <ins>Description</ins>: First thing we'll need to do before implementing any new logic, is update our company dependencies (`external-services`) to its latest version
+
+![Invoice Application](kata-readme/invoice-application-2.png)
 
 - Change `externalServicesVersion` dependency version to `2` on file `hexagonal-invoice-kata-application/build.gradle.kts`
 - Solve compilation issues on InvoiceService :warning:
@@ -106,6 +108,8 @@ If you are already convinced of the benefits of hexagonal architecture you can s
 #### 2.3 Another External Services version
 
 <ins>Description</ins>: You have been told that the ProductRepository has been decommissioned, so you'll need to update to a newer version of `external-services`
+
+![Invoice Application](kata-readme/invoice-application-3.png)
 
 - Change `externalServicesVersion` dependency version to `3` on file `hexagonal-invoice-kata-application/build.gradle.kts`
 - This new version removes the need for a repository :heavy_exclamation_mark:
